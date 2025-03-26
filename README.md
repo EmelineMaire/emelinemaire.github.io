@@ -1,3 +1,3 @@
-# EmelineMaire.github.io
+# maximechabriel.github.io
 
 This repository contains my personal website.

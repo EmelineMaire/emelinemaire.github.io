@@ -1,0 +1,39 @@
+---
+title: "Enseignements"
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+opts_chunk$set(fig.path = "images/",
+               cache.path = "cache/",
+               cache = FALSE,
+               echo = FALSE, #set to false to hide code
+               message = FALSE,
+               warning = FALSE,
+               out.width = "100%",
+               dpi = 200,
+               fig.align = "center")
+```
+
+<script>
+function hide_buttons(abstract) {
+    var x = document.getElementById(abstract);
+    if (x.style.display === "none") {
+        x.style.display = "block";
+    } else {
+        x.style.display = "none";
+    }
+}
+</script>
+
+## Méthodes quantitatives
+
+Cours donné à SciencesPo (campus de Paris) aux étudiant·es de 1ère année lors du second semestre 2024-2025
+
+## Enquête par questionnaire 
+
+Cours donné à l'Université Paris Cité en L2 de sciences sociales sur les deux semestres 2023-2024.
+
+## Introduction à Zotero
+
+Cours donné dans le cadre de l'UE Erg156 du master d'ergonomie du Cnam

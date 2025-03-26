@@ -1,0 +1,30 @@
+---
+title: "Emeline Maire"
+image: "/Users/maireem/Desktop/Administratif/Emeline_photo.jpg"
+favicon: images/favicon.ico
+angle: 130
+site: distill::distill_website
+links:
+  - label: '`r fontawesome::fa("envelope")` Email'
+    url: "mailto:emeline.maire@lecnam.net"
+  - label: '`r fontawesome::fa("github")` GitHub'
+    url: "https://github.com/EmelineMaire"
+output: postcards::trestles
+---
+
+Je suis chercheuse au sein du [**CREAPT** (Centre de recherche sur l'expérience, l'âge et les populations au travail)](https://ceet.cnam.fr/partenariats/gis-creapt/centre-de-recherches-sur-l-experience-l-age-et-les-populations-au-travail-creapt--959490.kjsp), [**CEET** (Centre d'étude de l'emploi et du travail)](https://ceet.cnam.fr/), et [**CRTD** (Centre de recherche sur le travail et le développement)](https://crtd.cnam.fr/equipes/ergonomie/).
+Je suis titulaire d'un titre d'ingénieure (Ensae - 2022) ainsi que d'un master de sociologie (master SQD - Université Versailles Saint-Quentin - 2022). 
+
+Je travaille sur les questions de **conditions de travail** et des liens que celles-ci entretiennent avec la **santé**, à travers l'analyse des **parcours professionnels**. Ces travaux s'accompagnent d'analyses en termes de **sexe** et de **genre**, notamment en étudiant les effets de la **ségrégation professionnelle sexuée**. Ces travaux en **sociologie quantitative** sont menés en parallèle de réflexions sur l'utilisation des chiffres en sciences sociales.
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+_Merci à [Maxime Chabriel](https://maximechabriel.github.io/) de m'avoir aidé à créer ce site !_
+
+_[E](https://jeanneastier.github.io/)[a](https://sites.google.com/view/mathis-sansu)[s](https://maximechabriel.github.io/)[t](https://ceet.cnam.fr/partenariats/gis-creapt/)[e](https://lise-cnrs.cnam.fr/le-laboratoire/les-membres-du-lise/valerya-viera-giraldo-lise-ceet--1025012.kjsp)[r](https://ceet.cnam.fr/le-ceet/chercheur-euse-s/mathea-boudinet-1521034.kjsp) E[g](https://scholar.google.com/citations?user=Ac0bSRwAAAAJ&hl=fr)gs_

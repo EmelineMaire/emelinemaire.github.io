@@ -1,0 +1,20 @@
+name: "EmelineMaire_website"
+title: "Emeline Maire"
+theme: EM_website.css
+favicon: images/favicon.ico
+description: |
+  Emeline Maire
+output_dir: "docs"
+base_url: https://emelinemaire.github.io/
+navbar:
+  # logo: "one_up.png"
+  right:
+    - text: "Présentation"
+      href: Présentation.html
+    - text: "Recherches"
+      href: Recherches.html
+    - text: "Enseignements"
+      href: Enseignements.html
+  # source_url: https://github.com/EmelineMaire/EmelineMaire_website
+  search: false
+output: distill::distill_article

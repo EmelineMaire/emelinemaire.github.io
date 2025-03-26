@@ -1,3 +1,3 @@
-# emelinemaire.github.io
+# EmelineMaire.github.io
 
-This is my website  
+This repository contains my personal website.

@@ -1,7 +1,7 @@
 name: "emelinemaire_website"
 title: "Emeline Maire"
-theme: MC_website.css
-favicon: images/favicon.ico
+theme: EM_website.css
+favicon: Documents/Disco.jpg
 description: |
   Emeline Maire
 output_dir: "docs"

@@ -1,0 +1,512 @@
+temp = temp_post70 %>%
+st_drop_geometry() %>%
+full_join(temp_pre70 %>% st_drop_geometry()) %>%
+mutate(across(everything(), ~ ifelse(is.na(.x), 0, .x)),
+diff_DAYSLOST_log = DAYSLOST_log_post70 - DAYSLOST_log_pre70)
+View(temp)
+temp = temp_post70 %>%
+st_drop_geometry() %>%
+full_join(temp_pre70 %>% st_drop_geometry()) %>%
+mutate(across(everything(), ~ ifelse(is.na(.x), 0, .x)),
+diff_DAYSLOST_log = DAYSLOST_log_post70 - DAYSLOST_log_pre70) %>%
+left_join(temp_pre70 %>%
+select(DEPT, gemoetry) %>%
+rbind(temp_post70 %>%
+select(DEPT, gemoetry)) %>%
+distinct())
+temp = temp_post70 %>%
+st_drop_geometry() %>%
+full_join(temp_pre70 %>% st_drop_geometry()) %>%
+mutate(across(everything(), ~ ifelse(is.na(.x), 0, .x)),
+diff_DAYSLOST_log = DAYSLOST_log_post70 - DAYSLOST_log_pre70) %>%
+left_join(temp_pre70 %>%
+select(DEPT, geometry) %>%
+rbind(temp_post70 %>%
+select(DEPT, geometry)) %>%
+distinct())
+View(temp)
+plotter <- function(data, var) {
+pal <- colorNumeric(palette = "YlOrRd", domain = data %>% pull(var) %>% as.numeric())
+leaflet(data = data) %>%
+addProviderTiles("CartoDB.Positron") %>%
+addPolygons(
+fillColor = ~pal(get(var)),
+fillOpacity = 0.7,
+color = "black",
+weight = 1
+) %>%
+setView(lng = 2.5, lat = 46, zoom = 6)
+}
+plotter(temp, 'diff_DAYSLOST_log')
+temp = temp_post70 %>%
+st_drop_geometry() %>%
+full_join(temp_pre70 %>% st_drop_geometry()) %>%
+mutate(across(everything(), ~ ifelse(is.na(.x), 0, .x)),
+diff_DAYSLOST_log = DAYSLOST_log_post70 - DAYSLOST_log_pre70) %>%
+left_join(temp_pre70 %>%
+select(DEPT, geometry) %>%
+rbind(temp_post70 %>%
+select(DEPT, geometry)) %>%
+distinct()) %>%
+st_as_sf(.)
+plotter <- function(data, var) {
+pal <- colorNumeric(palette = "YlOrRd", domain = data %>% pull(var) %>% as.numeric())
+leaflet(data = data) %>%
+addProviderTiles("CartoDB.Positron") %>%
+addPolygons(
+fillColor = ~pal(get(var)),
+fillOpacity = 0.7,
+color = "black",
+weight = 1
+) %>%
+setView(lng = 2.5, lat = 46, zoom = 6)
+}
+plotter(temp, 'diff_DAYSLOST_log')
+View(old_dep)
+View(dep)
+dep = st_read('C:\\Users\\Dell\\Downloads\\contour-des-departements.geojson')
+View(dep)
+colnames(full_data)
+old_dep <- data.frame(
+code = sprintf("%02d", 1:97),
+old_nom = c(
+"Ain", "Aisne", "Allier", "Alpes-de-Haute-Provence", "Hautes-Alpes",
+"Alpes-Maritimes", "Ardèche", "Ardennes", "Ariège", "Aube",
+"Aude", "Aveyron", "Bouches-du-Rhône", "Calvados", "Cantal",
+"Charente", "Charente-Inférieure", "Cher", "Corrèze", "Corse",
+"Côte-d'Or", "Côtes-du-Nord", "Creuse", "Dordogne", "Doubs",
+"Drôme", "Eure", "Eure-et-Loir", "Finistère", "Gard",
+"Haute-Garonne", "Gers", "Gironde", "Hérault", "Ille-et-Vilaine",
+"Indre", "Indre-et-Loire", "Isère", "Jura", "Landes",
+"Loir-et-Cher", "Loire", "Haute-Loire", "Loire-Inférieure",
+"Loiret", "Lot", "Lot-et-Garonne", "Lozère", "Maine-et-Loire",
+"Manche", "Marne", "Haute-Marne", "Mayenne",
+"Meurthe/Meurthe-et-Moselle", "Meuse", "Morbihan", "Moselle",
+"Nièvre", "Nord", "Oise", "Orne", "Pas-de-Calais",
+"Puy-de-Dôme", "Basses-Pyrénés", "Hautes-Pyrénées", "Pyrénées-Orientales",
+"Bas-Rhin", "Haut-Rhin", "Rhône", "Haute-Saône", "Saône-et-Loire", "Sarthe",
+"Savoie", "Haute-Savoie", "Seine", 'NONE', "Seine-et-Marne", "Seine-et-Oise",
+"Deux-Sèvres", "Somme", "Tarn", "Tarn-et-Garonne",
+"Var", "Vaucluse", "Vendée", "Vienne", "Haute-Vienne",
+"Vosges", "Yonne", 'NONE', 'Seine-inférieure', 'Alger', 'Multiples départements',
+'NONE', 'Oran', 'Constantine', 'Belfort'
+)
+)
+dep = st_read('C:\\Users\\Dell\\Downloads\\contour-des-departements.geojson')
+dep = dep %>%
+full_join(old_dep) %>%
+mutate(code = ifelse(code == 91, 76, code)) %>%
+mutate(change = nom == old_nom)
+# Corse
+merged_geometry <- st_union(dep$geometry[dep$code %in% c('2A', '2B')])
+dep <- dep[!dep$code %in% c('2A', '2B'), ]
+dep <- dep %>% rbind(st_sf(code = '20', nom = '2Corse', old_nom = 'Corse', change = 1, geometry = st_sfc(merged_geometry)))
+# Seine
+merged_geometry <- st_union(dep$geometry[dep$code %in% c('92', '93', '94', '75')])
+dep <- dep[!dep$code %in% c('92', '93', '94', '75'), ]
+dep <- dep %>% rbind(st_sf(code = '75', nom = 'Paris', old_nom = 'Seine', change = 1, geometry = st_sfc(merged_geometry)))
+# Couronne
+merged_geometry <- st_union(dep$geometry[dep$code %in% c('78', '91', '95')])
+dep <- dep[!dep$code %in% c('78', '91', '95'), ]
+dep <- dep %>% rbind(st_sf(code = '78', nom = 'Couronne', old_nom = 'Seine-et-Oise', change = 1, geometry = st_sfc(merged_geometry)))
+dep = dep %>% filter(!is.na(nom))
+View(dep)
+View(temp)
+View(dep)
+View(old_dep)
+library(dplyr)
+library(tidygeocoder)
+library(maps)
+library(sf)
+library(rnaturalearth)
+library(ggplot2)
+library(leaflet)
+path = 'C:\\Users\\Dell\\Desktop\\Dropbox\\'
+folder_strikes = "box_paper_franco_prussian_war\\data\\01_raw\\data_strikes_tilly\\ICPSR_08421-V2\\ICPSR_08421\\"
+tsv_files <- list.files(path = paste0(path, folder_strikes), pattern = "\\.tsv$", recursive = TRUE, full.names = TRUE)
+full_data = data.frame()
+for (file in tsv_files) {
+temp <- read.delim(file, sep = "\t", header = TRUE, stringsAsFactors = FALSE)
+temp$file = file
+if (nrow(full_data) > 0) {
+missing_a_in_b <- setdiff(names(temp), names(full_data))
+missing_b_in_a <- setdiff(names(full_data), names(temp))
+full_data[missing_a_in_b] <- NA
+temp[missing_b_in_a] <- NA
+}
+full_data = full_data %>% rbind(temp)
+}
+# See codebook_extraction.ipynb for codebook extraction
+# commune_codebook = read.csv(paste0(path, "box_paper_franco_prussian_war\\data\\02_intermediary\\data_tilly\\code_book.csv"), encoding = 'utf-8')
+# commune_codebook <- commune_codebook %>%
+#   mutate(COMMUNE.NAME = sub('*', '', COMMUNE.NAME, fixed = TRUE),
+#          adresse = paste0(COMMUNE.NAME, ', France')) %>%
+#   geocode(adresse)
+# write.csv(commune_codebook, paste0(path, "box_paper_franco_prussian_war\\data\\02_intermediary\\data_tilly\\clean_code_book.csv"), fileEncoding = 'utf-8')
+commune_codebook = read.csv(paste0(path, "box_paper_franco_prussian_war\\data\\02_intermediary\\data_tilly\\clean_code_book.csv"), encoding = 'utf-8')
+full_data = full_data %>%
+mutate(CODE.NUMBER = paste0(as.character(COMMUNPG), as.character(NOCOMMUN))) %>%
+left_join(commune_codebook %>% mutate(CODE.NUMBER = as.character(CODE.NUMBER)))
+# Statdesc
+colnames(full_data)
+old_dep <- data.frame(
+code = sprintf("%02d", 1:97),
+old_nom = c(
+"Ain", "Aisne", "Allier", "Alpes-de-Haute-Provence", "Hautes-Alpes",
+"Alpes-Maritimes", "Ardèche", "Ardennes", "Ariège", "Aube",
+"Aude", "Aveyron", "Bouches-du-Rhône", "Calvados", "Cantal",
+"Charente", "Charente-Inférieure", "Cher", "Corrèze", "Corse",
+"Côte-d'Or", "Côtes-du-Nord", "Creuse", "Dordogne", "Doubs",
+"Drôme", "Eure", "Eure-et-Loir", "Finistère", "Gard",
+"Haute-Garonne", "Gers", "Gironde", "Hérault", "Ille-et-Vilaine",
+"Indre", "Indre-et-Loire", "Isère", "Jura", "Landes",
+"Loir-et-Cher", "Loire", "Haute-Loire", "Loire-Inférieure",
+"Loiret", "Lot", "Lot-et-Garonne", "Lozère", "Maine-et-Loire",
+"Manche", "Marne", "Haute-Marne", "Mayenne",
+"Meurthe/Meurthe-et-Moselle", "Meuse", "Morbihan", "Moselle",
+"Nièvre", "Nord", "Oise", "Orne", "Pas-de-Calais",
+"Puy-de-Dôme", "Basses-Pyrénés", "Hautes-Pyrénées", "Pyrénées-Orientales",
+"Bas-Rhin", "Haut-Rhin", "Rhône", "Haute-Saône", "Saône-et-Loire", "Sarthe",
+"Savoie", "Haute-Savoie", "Seine", 'NONE', "Seine-et-Marne", "Seine-et-Oise",
+"Deux-Sèvres", "Somme", "Tarn", "Tarn-et-Garonne",
+"Var", "Vaucluse", "Vendée", "Vienne", "Haute-Vienne",
+"Vosges", "Yonne", 'NONE', 'Seine-inférieure', 'Alger', 'Multiples départements',
+'NONE', 'Oran', 'Constantine', 'Belfort'
+)
+)
+dep = st_read('C:\\Users\\Dell\\Downloads\\contour-des-departements.geojson')
+dep = dep %>%
+full_join(old_dep) %>%
+mutate(change = nom == old_nom)
+# Corse
+merged_geometry <- st_union(dep$geometry[dep$code %in% c('2A', '2B')])
+dep <- dep[!dep$code %in% c('2A', '2B'), ]
+dep <- dep %>% rbind(st_sf(code = '20', nom = '2Corse', old_nom = 'Corse', change = 1, geometry = st_sfc(merged_geometry)))
+# Seine
+merged_geometry <- st_union(dep$geometry[dep$code %in% c('92', '93', '94', '75')])
+dep <- dep[!dep$code %in% c('92', '93', '94', '75'), ]
+dep <- dep %>% rbind(st_sf(code = '75', nom = 'Paris', old_nom = 'Seine', change = 1, geometry = st_sfc(merged_geometry)))
+# Couronne
+merged_geometry <- st_union(dep$geometry[dep$code %in% c('78', '91', '95')])
+dep <- dep[!dep$code %in% c('78', '91', '95'), ]
+dep <- dep %>% rbind(st_sf(code = '78', nom = 'Couronne', old_nom = 'Seine-et-Oise', change = 1, geometry = st_sfc(merged_geometry)))
+dep = dep %>% filter(!is.na(nom))
+temp_post70 = full_data %>%
+filter(873 <= YEAR, YEAR <= 913) %>%
+mutate(DEPT = as.integer(DEPT)) %>%
+group_by(DEPT) %>%
+summarise(DAYSLOST_post70 = sum(DAYSLOST, na.rm = TRUE),
+count_post70 = n(),
+DAYSLOST_log_post70 = log(1+sum(DAYSLOST, na.rm = TRUE)),
+count_log_post70 = log(1+n())) %>%
+inner_join(dep %>% mutate(DEPT = as.integer(code)) %>% select(DEPT)) %>%
+st_as_sf(.)
+temp_pre70 = full_data %>%
+filter(0 <= YEAR, YEAR <= 869) %>%
+mutate(DEPT = as.integer(DEPT)) %>%
+group_by(DEPT) %>%
+summarise(DAYSLOST_pre70 = sum(DAYSLOST, na.rm = TRUE),
+count_pre70 = n(),
+DAYSLOST_log_pre70 = log(1+sum(DAYSLOST, na.rm = TRUE)),
+count_log_pre70 = log(1+n())) %>%
+inner_join(dep %>% mutate(DEPT = as.integer(code)) %>% select(DEPT)) %>%
+st_as_sf(.)
+temp = temp_post70 %>%
+st_drop_geometry() %>%
+full_join(temp_pre70 %>% st_drop_geometry()) %>%
+mutate(across(everything(), ~ ifelse(is.na(.x), 0, .x)),
+diff_DAYSLOST_log = DAYSLOST_log_post70 - DAYSLOST_log_pre70) %>%
+left_join(temp_pre70 %>%
+select(DEPT, geometry) %>%
+rbind(temp_post70 %>%
+select(DEPT, geometry)) %>%
+distinct()) %>%
+st_as_sf(.)
+occupied_dep = c(
+"Calvados" = 14,
+"Orne" = 61,
+"Sarthe" = 72,
+"Eure-et-Loir" = 28,
+"Loiret" = 45,
+"Loir-et-Cher" = 41,
+"Indre-et-Loire" = 37,
+"Yonne" = 89,
+"Seine-Inférieure" = 76,
+"Eure" = 27,
+"Seine-et-Oise" = NA,  # No longer exists (split into several departments in 1968
+"Seine-et-Marne" = 77,
+"Seine" = NA,
+"Aube" = 10,
+"Côte-d'Or" = 21
+)
+plotter <- function(data, var) {
+pal <- colorNumeric(palette = "YlOrRd", domain = data %>% pull(var) %>% as.numeric())
+leaflet(data = data) %>%
+addProviderTiles("CartoDB.Positron") %>%
+addPolygons(
+fillColor = ~pal(get(var)),
+fillOpacity = 0.7,
+color = "black",
+weight = 1
+) %>%
+setView(lng = 2.5, lat = 46, zoom = 6)
+}
+plotter(temp, 'diff_DAYSLOST_log')
+View(dep)
+View(temp)
+View(full_data)
+unique(full_data$DEPT)
+library(dplyr)
+library(tidygeocoder)
+library(maps)
+library(sf)
+library(rnaturalearth)
+library(ggplot2)
+library(leaflet)
+path = 'C:\\Users\\Dell\\Desktop\\Dropbox\\'
+folder_strikes = "box_paper_franco_prussian_war\\data\\01_raw\\data_strikes_tilly\\ICPSR_08421-V2\\ICPSR_08421\\"
+tsv_files <- list.files(path = paste0(path, folder_strikes), pattern = "\\.tsv$", recursive = TRUE, full.names = TRUE)
+full_data = data.frame()
+for (file in tsv_files) {
+temp <- read.delim(file, sep = "\t", header = TRUE, stringsAsFactors = FALSE)
+temp$file = file
+if (nrow(full_data) > 0) {
+missing_a_in_b <- setdiff(names(temp), names(full_data))
+missing_b_in_a <- setdiff(names(full_data), names(temp))
+full_data[missing_a_in_b] <- NA
+temp[missing_b_in_a] <- NA
+}
+full_data = full_data %>% rbind(temp)
+}
+# See codebook_extraction.ipynb for codebook extraction
+# commune_codebook = read.csv(paste0(path, "box_paper_franco_prussian_war\\data\\02_intermediary\\data_tilly\\code_book.csv"), encoding = 'utf-8')
+# commune_codebook <- commune_codebook %>%
+#   mutate(COMMUNE.NAME = sub('*', '', COMMUNE.NAME, fixed = TRUE),
+#          adresse = paste0(COMMUNE.NAME, ', France')) %>%
+#   geocode(adresse)
+# write.csv(commune_codebook, paste0(path, "box_paper_franco_prussian_war\\data\\02_intermediary\\data_tilly\\clean_code_book.csv"), fileEncoding = 'utf-8')
+commune_codebook = read.csv(paste0(path, "box_paper_franco_prussian_war\\data\\02_intermediary\\data_tilly\\clean_code_book.csv"), encoding = 'utf-8')
+full_data = full_data %>%
+mutate(CODE.NUMBER = paste0(as.character(COMMUNPG), as.character(NOCOMMUN))) %>%
+left_join(commune_codebook %>% mutate(CODE.NUMBER = as.character(CODE.NUMBER)))
+# Statdesc
+colnames(full_data)
+old_dep <- data.frame(
+code = sprintf("%02d", 1:97),
+old_nom = c(
+"Ain", "Aisne", "Allier", "Alpes-de-Haute-Provence", "Hautes-Alpes",
+"Alpes-Maritimes", "Ardèche", "Ardennes", "Ariège", "Aube",
+"Aude", "Aveyron", "Bouches-du-Rhône", "Calvados", "Cantal",
+"Charente", "Charente-Inférieure", "Cher", "Corrèze", "Corse",
+"Côte-d'Or", "Côtes-du-Nord", "Creuse", "Dordogne", "Doubs",
+"Drôme", "Eure", "Eure-et-Loir", "Finistère", "Gard",
+"Haute-Garonne", "Gers", "Gironde", "Hérault", "Ille-et-Vilaine",
+"Indre", "Indre-et-Loire", "Isère", "Jura", "Landes",
+"Loir-et-Cher", "Loire", "Haute-Loire", "Loire-Inférieure",
+"Loiret", "Lot", "Lot-et-Garonne", "Lozère", "Maine-et-Loire",
+"Manche", "Marne", "Haute-Marne", "Mayenne",
+"Meurthe/Meurthe-et-Moselle", "Meuse", "Morbihan", "Moselle",
+"Nièvre", "Nord", "Oise", "Orne", "Pas-de-Calais",
+"Puy-de-Dôme", "Basses-Pyrénés", "Hautes-Pyrénées", "Pyrénées-Orientales",
+"Bas-Rhin", "Haut-Rhin", "Rhône", "Haute-Saône", "Saône-et-Loire", "Sarthe",
+"Savoie", "Haute-Savoie", "Seine", 'NONE', "Seine-et-Marne", "Seine-et-Oise",
+"Deux-Sèvres", "Somme", "Tarn", "Tarn-et-Garonne",
+"Var", "Vaucluse", "Vendée", "Vienne", "Haute-Vienne",
+"Vosges", "Yonne", 'NONE', 'Seine-inférieure', 'Alger', 'Multiples départements',
+'NONE', 'Oran', 'Constantine', 'Belfort'
+)
+)
+dep = st_read('C:\\Users\\Dell\\Downloads\\contour-des-departements.geojson')
+dep = dep %>%
+full_join(old_dep) %>%
+mutate(change = nom == old_nom)
+# Corse
+merged_geometry <- st_union(dep$geometry[dep$code %in% c('2A', '2B')])
+dep <- dep[!dep$code %in% c('2A', '2B'), ]
+dep <- dep %>% rbind(st_sf(code = '20', nom = '2Corse', old_nom = 'Corse', change = 1, geometry = st_sfc(merged_geometry)))
+# Seine
+merged_geometry <- st_union(dep$geometry[dep$code %in% c('92', '93', '94', '75')])
+dep <- dep[!dep$code %in% c('92', '93', '94', '75'), ]
+dep <- dep %>% rbind(st_sf(code = '75', nom = 'Paris', old_nom = 'Seine', change = 1, geometry = st_sfc(merged_geometry)))
+# Couronne
+merged_geometry <- st_union(dep$geometry[dep$code %in% c('78', '91', '95')])
+dep <- dep[!dep$code %in% c('78', '91', '95'), ]
+dep <- dep %>% rbind(st_sf(code = '78', nom = 'Couronne', old_nom = 'Seine-et-Oise', change = 1, geometry = st_sfc(merged_geometry)))
+dep = dep %>% filter(!is.na(nom))
+dep = dep %>% mutate(code = ifelse(code == '76', '91', code))
+temp_post70 = full_data %>%
+filter(873 <= YEAR, YEAR <= 913) %>%
+mutate(DEPT = as.integer(DEPT)) %>%
+group_by(DEPT) %>%
+summarise(DAYSLOST_post70 = sum(DAYSLOST, na.rm = TRUE),
+count_post70 = n(),
+DAYSLOST_log_post70 = log(1+sum(DAYSLOST, na.rm = TRUE)),
+count_log_post70 = log(1+n())) %>%
+inner_join(dep %>% mutate(DEPT = as.integer(code)) %>% select(DEPT)) %>%
+st_as_sf(.)
+temp_pre70 = full_data %>%
+filter(0 <= YEAR, YEAR <= 869) %>%
+mutate(DEPT = as.integer(DEPT)) %>%
+group_by(DEPT) %>%
+summarise(DAYSLOST_pre70 = sum(DAYSLOST, na.rm = TRUE),
+count_pre70 = n(),
+DAYSLOST_log_pre70 = log(1+sum(DAYSLOST, na.rm = TRUE)),
+count_log_pre70 = log(1+n())) %>%
+inner_join(dep %>% mutate(DEPT = as.integer(code)) %>% select(DEPT)) %>%
+st_as_sf(.)
+temp = temp_post70 %>%
+st_drop_geometry() %>%
+full_join(temp_pre70 %>% st_drop_geometry()) %>%
+mutate(across(everything(), ~ ifelse(is.na(.x), 0, .x)),
+diff_DAYSLOST_log = DAYSLOST_log_post70 - DAYSLOST_log_pre70) %>%
+left_join(temp_pre70 %>%
+select(DEPT, geometry) %>%
+rbind(temp_post70 %>%
+select(DEPT, geometry)) %>%
+distinct()) %>%
+st_as_sf(.)
+occupied_dep = c(
+"Calvados" = 14,
+"Orne" = 61,
+"Sarthe" = 72,
+"Eure-et-Loir" = 28,
+"Loiret" = 45,
+"Loir-et-Cher" = 41,
+"Indre-et-Loire" = 37,
+"Yonne" = 89,
+"Seine-Inférieure" = 76,
+"Eure" = 27,
+"Seine-et-Oise" = NA,
+"Seine-et-Marne" = 77,
+"Seine" = NA,
+"Aube" = 10,
+"Côte-d'Or" = 21
+)
+plotter <- function(data, var) {
+pal <- colorNumeric(palette = "YlOrRd", domain = data %>% pull(var) %>% as.numeric())
+leaflet(data = data) %>%
+addProviderTiles("CartoDB.Positron") %>%
+addPolygons(
+fillColor = ~pal(get(var)),
+fillOpacity = 0.7,
+color = "black",
+weight = 1
+) %>%
+setView(lng = 2.5, lat = 46, zoom = 6)
+}
+plotter(temp, 'diff_DAYSLOST_log')
+plotter(temp, 'diff_DAYSLOST', data_boundaries)
+plotter(temp, 'DAYSLOST_log', data_boundaries)
+plotter(temp, 'DAYSLOST_log_pre70', data_boundaries)
+library(dplyr)
+library(tidygeocoder)
+library(maps)
+library(sf)
+library(rnaturalearth)
+library(ggplot2)
+library(leaflet)
+path = 'C:\\Users\\Dell\\Desktop\\Dropbox\\'
+folder_strikes = "box_paper_franco_prussian_war\\data\\01_raw\\data_strikes_tilly\\ICPSR_08421-V2\\ICPSR_08421\\"
+tsv_files <- list.files(path = paste0(path, folder_strikes), pattern = "\\.tsv$", recursive = TRUE, full.names = TRUE)
+full_data = data.frame()
+for (file in tsv_files) {
+temp <- read.delim(file, sep = "\t", header = TRUE, stringsAsFactors = FALSE)
+temp$file = file
+if (nrow(full_data) > 0) {
+missing_a_in_b <- setdiff(names(temp), names(full_data))
+missing_b_in_a <- setdiff(names(full_data), names(temp))
+full_data[missing_a_in_b] <- NA
+temp[missing_b_in_a] <- NA
+}
+full_data = full_data %>% rbind(temp)
+}
+# See codebook_extraction.ipynb for codebook extraction
+# commune_codebook = read.csv(paste0(path, "box_paper_franco_prussian_war\\data\\02_intermediary\\data_tilly\\code_book.csv"), encoding = 'utf-8')
+# commune_codebook <- commune_codebook %>%
+#   mutate(COMMUNE.NAME = sub('*', '', COMMUNE.NAME, fixed = TRUE),
+#          adresse = paste0(COMMUNE.NAME, ', France')) %>%
+#   geocode(adresse)
+# write.csv(commune_codebook, paste0(path, "box_paper_franco_prussian_war\\data\\02_intermediary\\data_tilly\\clean_code_book.csv"), fileEncoding = 'utf-8')
+commune_codebook = read.csv(paste0(path, "box_paper_franco_prussian_war\\data\\02_intermediary\\data_tilly\\clean_code_book.csv"), encoding = 'utf-8')
+full_data = full_data %>%
+mutate(CODE.NUMBER = paste0(as.character(COMMUNPG), as.character(NOCOMMUN))) %>%
+left_join(commune_codebook %>% mutate(CODE.NUMBER = as.character(CODE.NUMBER)))
+# Statdesc
+colnames(full_data)
+old_dep <- data.frame(
+code = sprintf("%02d", 1:97),
+old_nom = c(
+"Ain", "Aisne", "Allier", "Alpes-de-Haute-Provence", "Hautes-Alpes",
+"Alpes-Maritimes", "Ardèche", "Ardennes", "Ariège", "Aube",
+"Aude", "Aveyron", "Bouches-du-Rhône", "Calvados", "Cantal",
+"Charente", "Charente-Inférieure", "Cher", "Corrèze", "Corse",
+"Côte-d'Or", "Côtes-du-Nord", "Creuse", "Dordogne", "Doubs",
+"Drôme", "Eure", "Eure-et-Loir", "Finistère", "Gard",
+"Haute-Garonne", "Gers", "Gironde", "Hérault", "Ille-et-Vilaine",
+"Indre", "Indre-et-Loire", "Isère", "Jura", "Landes",
+"Loir-et-Cher", "Loire", "Haute-Loire", "Loire-Inférieure",
+"Loiret", "Lot", "Lot-et-Garonne", "Lozère", "Maine-et-Loire",
+"Manche", "Marne", "Haute-Marne", "Mayenne",
+"Meurthe/Meurthe-et-Moselle", "Meuse", "Morbihan", "Moselle",
+"Nièvre", "Nord", "Oise", "Orne", "Pas-de-Calais",
+"Puy-de-Dôme", "Basses-Pyrénés", "Hautes-Pyrénées", "Pyrénées-Orientales",
+"Bas-Rhin", "Haut-Rhin", "Rhône", "Haute-Saône", "Saône-et-Loire", "Sarthe",
+"Savoie", "Haute-Savoie", "Seine", 'NONE', "Seine-et-Marne", "Seine-et-Oise",
+"Deux-Sèvres", "Somme", "Tarn", "Tarn-et-Garonne",
+"Var", "Vaucluse", "Vendée", "Vienne", "Haute-Vienne",
+"Vosges", "Yonne", 'NONE', 'Seine-inférieure', 'Alger', 'Multiples départements',
+'NONE', 'Oran', 'Constantine', 'Belfort'
+)
+)
+dep = st_read('C:\\Users\\Dell\\Downloads\\contour-des-departements.geojson')
+dep = dep %>%
+full_join(old_dep) %>%
+mutate(change = nom == old_nom)
+# Corse
+merged_geometry <- st_union(dep$geometry[dep$code %in% c('2A', '2B')])
+dep <- dep[!dep$code %in% c('2A', '2B'), ]
+dep <- dep %>% rbind(st_sf(code = '20', nom = '2Corse', old_nom = 'Corse', change = 1, geometry = st_sfc(merged_geometry)))
+# Seine
+merged_geometry <- st_union(dep$geometry[dep$code %in% c('92', '93', '94', '75')])
+dep <- dep[!dep$code %in% c('92', '93', '94', '75'), ]
+dep <- dep %>% rbind(st_sf(code = '75', nom = 'Paris', old_nom = 'Seine', change = 1, geometry = st_sfc(merged_geometry)))
+# Couronne
+merged_geometry <- st_union(dep$geometry[dep$code %in% c('78', '91', '95')])
+dep <- dep[!dep$code %in% c('78', '91', '95'), ]
+dep <- dep %>% rbind(st_sf(code = '78', nom = 'Couronne', old_nom = 'Seine-et-Oise', change = 1, geometry = st_sfc(merged_geometry)))
+dep = dep %>% filter(!is.na(nom))
+dep = dep %>% mutate(code = ifelse(code == '76', '91', code))
+temp_post70 = full_data %>%
+filter(873 <= YEAR, YEAR <= 913) %>%
+mutate(DEPT = as.integer(DEPT)) %>%
+group_by(DEPT) %>%
+summarise(DAYSLOST_post70 = sum(DAYSLOST, na.rm = TRUE),
+count_post70 = n(),
+DAYSLOST_log_post70 = log(1+sum(DAYSLOST, na.rm = TRUE)),
+count_log_post70 = log(1+n())) %>%
+inner_join(dep %>% mutate(DEPT = as.integer(code)) %>% select(DEPT)) %>%
+st_as_sf(.)
+temp_pre70 = full_data %>%
+filter(0 <= YEAR, YEAR <= 869) %>%
+mutate(DEPT = as.integer(DEPT)) %>%
+group_by(DEPT) %>%
+summarise(DAYSLOST_pre70 = sum(DAYSLOST, na.rm = TRUE),
+count_pre70 = n(),
+DAYSLOST_log_pre70 = log(1+sum(DAYSLOST, na.rm = TRUE)),
+count_log_pre70 = log(1+n())) %>%
+inner_join(dep %>% mutate(DEPT = as.integer(code)) %>% select(DEPT)) %>%
+st_as_sf(.)
+temp = temp_post70 %>%
+st_drop_geometry() %>%
+full_join(temp_pre70 %>% st_drop_geometry()) %>%
+mutate(across(everything(), ~ ifelse(is.na(.x), 0, .x)),
+diff_DAYSLOST_log = DAYSLOST_log_post70 - DAYSLOST_log_pre70) %>%
+left_join(temp_pre70 %>%
+select(DEPT, geometry) %>%
+rbind(temp_post70 %>%
+select(DEPT, geometry)) %>%
+distinct()) %>%
+st_as_sf(.)
+data_boundaries <- data %>%
+st_cast("POLYGON") %>%
+st_boundary()
